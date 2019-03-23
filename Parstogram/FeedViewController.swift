@@ -13,25 +13,16 @@ import AlamofireImage
 class FeedViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
     @IBOutlet weak var feedTableView: UITableView!
-    
-    @IBAction func logoutButtonPressed(_ sender: Any) {
-        PFUser.logOut()
-        
-        let main = UIStoryboard(name: "Main", bundle: nil)
-        let loginViewController = main.instantiateViewController(withIdentifier: "LoginViewController")
-        let delegate = UIApplication.shared.delegate as! AppDelegate
-        delegate.window?.rootViewController = loginViewController
-    }
-    
     var posts = [PFObject]()
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         feedTableView.delegate = self
         feedTableView.dataSource = self
         // Do any additional setup after loading the view.
     }
+    
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
@@ -46,6 +37,15 @@ class FeedViewController: UIViewController, UITableViewDelegate, UITableViewData
                 self.feedTableView.reloadData()
             }
         }
+    }
+    
+    @IBAction func logoutButtonPressed(_ sender: Any) {
+        PFUser.logOut()
+        
+        let main = UIStoryboard(name: "Main", bundle: nil)
+        let loginViewController = main.instantiateViewController(withIdentifier: "LoginViewController")
+        let delegate = UIApplication.shared.delegate as! AppDelegate
+        delegate.window?.rootViewController = loginViewController
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -68,9 +68,22 @@ class FeedViewController: UIViewController, UITableViewDelegate, UITableViewData
         
         cell.photoView.af_setImage(withURL: url)
         
-        
         return cell
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let post = posts[indexPath.row]
         
+        let comment = PFObject(className: "Comments")
+        comment["text"] = "This is a random comment"
+        comment["post"] = post
+        comment["author"] = PFUser.current()
+        
+        post.add(comment, forKey: "Comments")
+        
+        post.saveInBackground { (success, error) in
+            print(success ? "comment saved successfully" : "comment failed to save")
+        }
     }
     
 
