@@ -1,5 +1,5 @@
 //
-//  PostTableViewCell.swift
+//  PostCell.swift
 //  Parstogram
 //
 //  Created by Michael Zetune on 3/7/19.
@@ -8,7 +8,7 @@
 
 import UIKit
 
-class PostTableViewCell: UITableViewCell {
+class PostCell: UITableViewCell {
 
     @IBOutlet weak var photoView: UIImageView!
     @IBOutlet weak var usernameLabel: UILabel!
